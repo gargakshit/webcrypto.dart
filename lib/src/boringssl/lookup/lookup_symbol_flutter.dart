@@ -21,9 +21,25 @@ import 'utils.dart';
 
 /// Dynamically load `webcrypto_lookup_symbol` function.
 final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
-  var library = Platform.isAndroid
-      ? DynamicLibrary.open('libwebcrypto.so')
-      : DynamicLibrary.executable();
+  final library = () {
+    if (Platform.isAndroid || Platform.isLinux) {
+      return DynamicLibrary.open('libwebcrypto.so');
+    }
+
+    if (Platform.isWindows) {
+      return DynamicLibrary.open('libwebcrypto.dll');
+    }
+
+    if (Platform.isMacOS) {
+      return DynamicLibrary.open('libwebcrypto.dylib');
+    }
+
+    if (Platform.isIOS) {
+      return DynamicLibrary.executable();
+    }
+
+    throw UnsupportedError('libwebcrypto is not supported on your platform');
+  }();
 
   try {
     // Try to lookup the 'webcrypto_lookup_symbol' symbol.

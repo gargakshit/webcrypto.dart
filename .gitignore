@@ -11,3 +11,6 @@
 /android/.cxx/
 /notes.md
 .DS_Store
+/win/
+/third_party/**/*.obj
+/third_party/boringssl/**/*.sh
