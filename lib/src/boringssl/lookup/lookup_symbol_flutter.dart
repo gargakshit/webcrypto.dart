@@ -15,6 +15,8 @@
 import 'dart:ffi';
 import 'dart:io' show Platform;
 
+import 'package:path/path.dart' as path;
+
 import 'symbols.generated.dart';
 import '../bindings/generated_bindings.dart';
 import 'utils.dart';
@@ -23,7 +25,15 @@ import 'utils.dart';
 final Pointer<T> Function<T extends NativeType>(String symbolName) lookup = () {
   final library = () {
     if (Platform.isAndroid || Platform.isLinux) {
-      return DynamicLibrary.open('libwebcrypto.so');
+      final executableDir = Platform.resolvedExecutable.split('/');
+      executableDir.removeLast();
+
+      final libPath = path.join(
+        executableDir.join('/'),
+        'lib/libwebcrypto.so',
+      );
+
+      return DynamicLibrary.open(libPath);
     }
 
     if (Platform.isWindows) {
